@@ -254,6 +254,9 @@ export default {
   overflow-y: scroll;
   overflow-x: unset;
 }
+.studentNames::-webkit-scrollbar{
+  display: none;
+}
 button{
   white-space: nowrap;
 }
