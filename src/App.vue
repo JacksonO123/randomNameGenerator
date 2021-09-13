@@ -1,5 +1,24 @@
 <template>
   <div class="App" :class="currentTheme">
+    <div class="instructions-wrapper" v-if="showingInstructions">
+      <div class="close-btn" @click="notShowingInstructions"><img src="@/assets/x.svg"></div>
+      <div class="instructions">
+        <h2>Instructions</h2>
+        <li>Select the period number at the top left</li>
+        <li>Click edit and type students, every student should be on a different line</li>
+        <li>At the bottom left, click add to save changes, or cancel to cancel them</li>
+        <li>At the bar at the top, click generate name to generate a random name</li>
+        <p>Extras</p>
+        <li>The switch at the top right enables/disables darkmode</li>
+        <li>To share the website, copy and paste the url that is in the search bar</li>
+        <p>Algorithm details</p>
+        <li>
+          The randomizing algorith works by assigning each name a value of times another random name should be called before it can be called again.
+          this value is half of the number of names there are in the period.
+        </li>
+        <li>Notice: This algorithm does not eliminate name repeats, however it greatly reduces them</li>
+      </div>
+    </div>
     <div class="card studentNames" style="padding: 0;">
       <div class="class-wrapper">
         <button class="class-btn" :class="currentClass == 0 ? 'active-class' : ''" @click="setActive(0)" placeholder="Class 1">1</button>
@@ -34,9 +53,15 @@
     </div>
     <div class="content">
       <div class="card header">
-        <div><button class="small-btn" @click="generateRandomName">Generate Name</button></div>
-        <div class="mode-toggle-wrapper" @click="switchTheme">
-          <div class="mode-toggle" ref="themeToggle"></div>
+        <div class="control-wrapper">
+          <button class="small-btn" @click="generateRandomName">Generate Name</button>
+        </div>
+        <div class="control-wrapper">
+          <button class="small-btn mr-2" @click="showInstructions">Show Instructions</button>
+          <!-- <button class="small-btn mr-2" @click="copyLink">Copy Link</button> -->
+          <div class="mode-toggle-wrapper" @click="switchTheme">
+            <div class="mode-toggle" ref="themeToggle"></div>
+          </div>
         </div>
       </div>
       <main>
@@ -57,7 +82,8 @@ export default {
       addingStudent: false,
       calledNames: [],
       currentClass: -1,
-      currentTheme: ''
+      currentTheme: '',
+      showingInstructions: false
     }
   },
   methods: {
@@ -119,13 +145,7 @@ export default {
           calledStudent = this.students[Math.floor(Math.random()*this.students.length)].name;
         }
         //push called student to called names list with correct timesleft
-        if(this.students.length == 1){
-          this.calledNames.push({name: calledStudent, timesLeft: 0});
-        }else if(this.students.length < 5){
-          this.calledNames.push({name: calledStudent, timesLeft: Math.floor(this.students.length/2)});
-        }else{
-          this.calledNames.push({name: calledStudent, timesLeft: 5});
-        }
+        this.calledNames.push({name: calledStudent, timesLeft: this.students.length % 2 == 0 ? this.students.length/2 : (this.students.length+1)/2});
         this.randomName = calledStudent
       }else{
         alert('Class must have at least 4 students');
@@ -181,6 +201,15 @@ export default {
       this.students = [];
       savedData[this.currentClass] = [];
       localStorage.setItem('students', JSON.stringify(savedData));
+    },
+    showInstructions(){
+      this.showingInstructions = true;
+    },
+    copyLink(){
+      console.log('link not coppied');
+    },
+    notShowingInstructions(){
+      this.showingInstructions = false;
     }
   },
   async created(){
@@ -480,5 +509,73 @@ main{
   justify-content: center;
   align-items: center;
   padding: 4px;
+}
+.control-wrapper{
+  display: flex;
+  flex-direction: row;
+}
+.mr-2{
+  margin-right: 8px;
+}
+.instructions-wrapper{
+  position: absolute;
+  animation: showBg 0.5s;
+  background: rgba(0, 0, 0, 0.6);
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+@keyframes showBg{
+  from{
+    background: rgba(0, 0, 0, 0);
+  }
+  to{
+    background: rgba(0, 0, 0, 0.6);
+  }
+}
+.instructions{
+  padding: 25px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  background: #fff;
+  border: none;
+  border-radius: 15px;
+  max-width: 50%;
+}
+.instructions h2{
+  margin-bottom: 10px;
+}
+.instructions p{
+  margin-top: 12px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+.close-btn{
+  position: absolute;
+  left: calc(100% - 5px);
+  top: 10px;
+  width: 35px;
+  height: 35px;
+  transform: translateX(-100%);
+  border: none;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.2s;
+  cursor: pointer;
+}
+.close-btn:hover{
+  background: rgba(255, 255, 255, 0.7)
+}
+.close-btn img{
+  transform: translate(-0.5px);
 }
 </style>
