@@ -127,7 +127,7 @@ export default {
         for(let i = 0; i < this.calledNames.length; i++){
           this.calledNames[i].timesLeft--;
         }
-        //filter through the names and keep ones with >0 value (.filter doesn't work so i do this)
+        //filter through the names and keep ones with >0 value
         let filteredNames = [];
         this.calledNames.forEach(item => {
           if(item.timesLeft > 0){
